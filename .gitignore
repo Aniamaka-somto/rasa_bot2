@@ -1,0 +1,46 @@
+# Environment variables
+.env
+
+# Node.js and React specific ignores
+# ----------------------------------
+# dependencies
+/Frontend/node_modules
+/Frontend/build
+/Frontend/npm-debug.log*
+/Frontend/yarn-debug.log*
+/Frontend/yarn-error.log*
+/Frontend/.DS_Store
+/Frontend/coverage
+
+# editor
+.idea
+.vscode
+
+# Mac
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Rasa specific ignores
+# ---------------------
+# Models
+/Backend/models/*
+
+
+# Virtual environment (if you're using one inside rasa-backend)
+/Backend/venv/
+/Backend/.venv/
+
+# Python compiled files
+/Backend/__pycache__/
+/Backend/*.pyc
+/Backend/*.pytest_cache/
+
+# Rasa specific temporary files
+/Backend/.rasa/
+/Backend/data/.DS_Store # Example if your OS creates these in data

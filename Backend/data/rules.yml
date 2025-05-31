@@ -1,0 +1,69 @@
+version: "3.1"
+
+rules:
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - rule: Say 'you are welcome' anytime the user says thank you
+    steps:
+      - intent: thank_you
+      - action: utter_youre_welcome
+
+  - rule: Emergency check activation
+    condition:
+      - slot_was_set:
+          - emergency_case: true
+    steps:
+      - action: utter_emergency_alert
+      - action: action_restart # Reset the conversation
+
+  - rule: Handle emergency intent immediately
+    steps:
+      - intent: emergency_help
+      - action: action_check_emergency
+
+  - rule: Activate symptom form
+    steps:
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - slot_was_set:
+          - requested_slot: symptoms # Set the initial requested slot
+
+  - rule: Submit symptom form and process
+    condition:
+      - active_loop: symptom_form
+    steps:
+      - action: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
+
+  - rule: Handle medication inquiry after diagnosis
+    condition:
+      - slot_was_set:
+          - identified_ailment: true
+    steps:
+      - intent: medication_inquiry
+      - action: action_provide_medication_info
+
+  - rule: Handle prevention tips request
+    steps:
+      - intent: prevention_tips
+      - action: action_give_prevention_tips
+      - action: utter_prevention_general
+
+  - rule: Handle restart request
+    steps:
+      - intent: restart
+      - action: action_restart
+
+  - rule: Default fallback when confidence is low
+    steps:
+      - intent: nlu_fallback
+      - action: action_default_fallback

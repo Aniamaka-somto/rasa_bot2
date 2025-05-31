@@ -1,0 +1,180 @@
+version: "3.1"
+
+nlu:
+  - intent: greet
+    examples: |
+      - hello
+      - hi
+      - hey
+      - good morning
+      - good evening
+      - hi there
+      - hello there
+      - greetings
+
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - see you later
+      - talk to you later
+      - thanks bye
+      - goodbye for now
+      - catch you later
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yeah
+      - yep
+      - that's right
+      - correct
+      - absolutely
+      - sure
+      - definitely
+      - ok
+      - okay
+
+  - intent: deny
+    examples: |
+      - no
+      - nope
+      - not really
+      - no way
+      - absolutely not
+      - definitely not
+      - I don't think so
+      - negative
+
+  - intent: thank_you
+    examples: |
+      - thank you
+      - thanks
+      - thank you very much
+      - thanks a lot
+      - appreciate it
+      - much appreciated
+
+  - intent: report_symptoms
+    examples: |
+      - I have a [headache](symptom)
+      - I'm feeling [nauseous](symptom)
+      - My [stomach](body_part) hurts
+      - I have [fever](symptom) and [chills](symptom)
+      - I've been [coughing](symptom) for [3 days](duration)
+      - I have [sore throat](symptom)
+      - My [head](body_part) is pounding
+      - I feel [dizzy](symptom)
+      - I have [runny nose](symptom) and [sneezing](symptom)
+      - I'm experiencing [chest pain](symptom)
+      - I have [difficulty breathing](symptom)
+      - My [back](body_part) hurts [severely](severity)
+      - I've been having [diarrhea](symptom) since [yesterday](duration)
+      - I have [rash](symptom) on my [arms](body_part)
+      - I feel [tired](symptom) all the time
+      - I have [insomnia](symptom)
+      - I'm feeling [anxious](symptom)
+      - I have [stomach cramps](symptom)
+      - My [throat](body_part) feels scratchy
+      - I have [body aches](symptom)
+      - I'm feeling [weak](symptom)
+      - I have [conjunctivitis](symptom)
+      - My [eyes](body_part) are [red and itchy](symptom)
+      - I have [menstrual cramps](symptom)
+      - I feel [bloated](symptom)
+      - I have [acne](symptom) breakout
+      - I'm experiencing [mood swings](symptom)
+      - I have [constipation](symptom)
+      - My [joints](body_part) ache
+      - I have [migraine](symptom)
+      - I feel [stressed](symptom)
+      - I have [heartburn](symptom)
+      - I'm feeling [depressed](symptom)
+      - I have [allergic reaction](symptom)
+      - My [skin](body_part) is [itchy](symptom)
+      - I have [food poisoning](symptom)
+      - I'm experiencing [panic attacks](symptom)
+      - I have [UTI symptoms](symptom)
+      - I feel [burning sensation](symptom) when urinating
+      - I have [pink eye](symptom)
+      - My [muscles](body_part) are sore
+      - I have [cold sores](symptom)
+      - I'm experiencing [vertigo](symptom)
+      - I have [ear infection](symptom)
+      - My [ear](body_part) hurts
+      - I have [tooth pain](symptom)
+      - I feel [numbness](symptom) in my [hands](body_part)
+      - I have [shin splints](symptom)
+      - I'm experiencing [heat exhaustion](symptom)
+      - I have [dehydration](symptom) symptoms
+      - I feel [lightheaded](symptom)
+      - The pain is [mild](severity)
+      - It feels [moderate](severity)
+      - The symptoms are [severe](severity)
+      - [Mild](severity) headache
+      - [MODERATE](severity) fever
+      - [Severe](severity) stomach pain
+
+  - intent: emergency_help
+    examples: |
+      - I can't breathe
+      - I'm having chest pain
+      - I'm having severe allergic reaction
+      - I think I'm having a heart attack
+      - I'm bleeding heavily
+      - I've been vomiting blood
+      - I'm having severe abdominal pain
+      - I think I broke my bone
+      - I'm having trouble speaking
+      - I'm feeling confused and disoriented
+      - I've taken too many pills
+      - I'm having suicidal thoughts
+      - I can't move my arm/leg
+      - I'm having severe difficulty breathing
+      - I'm experiencing severe head trauma
+      - I think I'm having a stroke
+      - I'm having anaphylactic shock
+      - I'm experiencing severe burns
+      - I'm having seizures
+      - This is an emergency
+
+  - intent: medication_inquiry
+    examples: |
+      - What medication should I take?
+      - Can you recommend medicine?
+      - What drugs are good for this?
+      - Should I take painkillers?
+      - What's the best treatment?
+      - Do I need antibiotics?
+      - Can I take over-the-counter medicine?
+      - What should I do for treatment?
+
+  - intent: dosage_question
+    examples: |
+      - How much should I take?
+      - What's the correct dosage?
+      - How often should I take this?
+      - How many pills per day?
+      - What's the safe amount?
+
+  - intent: prevention_tips
+    examples: |
+      - How can I prevent this?
+      - What can I do to avoid getting sick?
+      - Any prevention tips?
+      - How to stay healthy?
+      - What are some health tips?
+
+  - intent: restart
+    examples: |
+      - start over
+      - restart
+      - begin again
+      - new consultation
+      - fresh start
+
+  - intent: nlu_fallback
+    examples: |
+      - What's the weather like?
+      - Tell me a joke
+      - How's it going?

@@ -1,0 +1,151 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - report_symptoms
+  - ask_for_help
+  - emergency_help
+  - medication_inquiry
+  - dosage_question
+  - side_effects_question
+  - prevention_tips
+  - thank_you
+  - restart
+  - nlu_fallback
+
+entities:
+  - symptom
+  - body_part
+  - duration
+  - severity
+  - ailment
+  - medication
+  - age_group
+  - gender
+
+slots:
+  symptoms:
+    type: list
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: symptom
+        intent: report_symptoms
+
+  duration:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: duration
+        intent: report_symptoms
+
+  severity:
+    type: categorical
+    values:
+      - mild
+      - moderate
+      - severe
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: severity
+        intent: report_symptoms
+      - type: from_text
+        intent: report_symptoms
+
+  body_part:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: body_part
+
+  identified_ailment:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: ailment
+
+  emergency_case:
+    type: bool
+    influence_conversation: true
+    mappings:
+      - type: from_intent
+        intent: emergency_help
+        value: true
+
+  requested_slot:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom # Since this slot is managed by the form, we use a custom mapping
+
+responses:
+  utter_greet:
+    - text: "Hello! I'm your Student Health Assistant. I can help identify common health issues and recommend appropriate treatments. How are you feeling today?"
+    - text: "Hi there! I'm here to help with your health concerns. Tell me about any symptoms you're experiencing."
+
+  utter_goodbye:
+    - text: "Take care of yourself! Remember, if symptoms persist or worsen, please consult a healthcare professional. Stay healthy!"
+    - text: "Goodbye! Don't hesitate to reach out if you need more health guidance. Feel better soon!"
+
+  utter_ask_symptoms:
+    - text: "Can you describe the symptoms you're experiencing? Please be as detailed as possible."
+    - text: "What symptoms are you currently having? Include any pain, discomfort, or unusual feelings."
+
+  utter_ask_duration:
+    - text: "How long have you been experiencing these symptoms?"
+    - text: "When did these symptoms start? Hours, days, or weeks ago?"
+
+  utter_ask_severity:
+    - text: "On a scale of mild, moderate, to severe, how would you rate your symptoms?"
+    - text: "How severe are your symptoms? Would you describe them as mild, moderate, or severe?"
+
+  utter_emergency_alert:
+    - text: "⚠️ EMERGENCY ALERT ⚠️\nYour symptoms may require immediate medical attention. Please:\n1. Call emergency services (911/999)\n2. Go to the nearest hospital\n3. Contact campus health services immediately\n4. Don't delay seeking professional help!"
+
+  utter_disclaimer:
+    - text: "⚠️ Important: This is for educational purposes only and should not replace professional medical advice. Always consult healthcare professionals for proper diagnosis and treatment."
+
+  utter_prevention_general:
+    - text: "General health tips for students:\n• Get 7-9 hours of sleep\n• Eat balanced meals regularly\n• Stay hydrated\n• Exercise regularly\n• Manage stress\n• Practice good hygiene\n• Avoid sharing personal items"
+
+  utter_youre_welcome:
+    - text: "You're welcome! Take care of your health. 🏥"
+    - text: "Happy to help! Stay healthy! 😊"
+
+  utter_default:
+    - text: "I didn't understand that. Could you please rephrase or tell me about your symptoms?"
+    - text: "Sorry, I'm not sure what you mean. Can you describe your health concerns or symptoms?"
+    - text: "I'm here to help with health issues. What symptoms are you experiencing?"
+
+  utter_iamabot:
+    - text: "I'm a Student Health Assistant bot designed to help identify common ailments and recommend treatments for university and secondary school students."
+
+actions:
+  - action_identify_ailment
+  - action_recommend_treatment
+  - action_check_emergency
+  - action_provide_medication_info
+  - action_give_prevention_tips
+  - validate_symptom_form
+  - action_restart
+  - action_default_fallback
+
+forms:
+  symptom_form:
+    required_slots:
+      - symptoms
+      - duration
+      - severity
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

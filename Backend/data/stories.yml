@@ -1,0 +1,128 @@
+version: "3.1"
+
+stories:
+  - story: basic greeting and symptom reporting
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - symptoms: ["headache"]
+          - duration: "2 days"
+          - severity: "moderate"
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
+
+  - story: emergency situation
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: emergency_help
+      - slot_was_set:
+          - emergency_case: true
+      - action: action_check_emergency
+
+  - story: multiple symptoms consultation
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - symptoms: ["fever", "cough", "sore throat"]
+          - duration: "3 days"
+          - severity: "moderate"
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
+
+  - story: medication inquiry
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - symptoms: ["stomach pain"]
+          - duration: "1 day"
+          - severity: "mild"
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
+      - intent: medication_inquiry
+      - action: action_provide_medication_info
+
+  - story: prevention tips request
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: prevention_tips
+      - action: action_give_prevention_tips
+      - action: utter_prevention_general
+
+  - story: restart conversation
+    steps:
+      - intent: restart
+      - action: action_restart
+
+  - story: anxiety and stress consultation
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - symptoms: ["anxiety", "stress"]
+          - duration: "1 week"
+          - severity: "moderate"
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
+
+  - story: cold and flu symptoms
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - symptoms: ["runny nose", "sneezing", "congestion"]
+          - duration: "2 days"
+          - severity: "mild"
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
+
+  - story: digestive issues consultation
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: report_symptoms
+      - action: symptom_form
+      - active_loop: symptom_form
+      - active_loop: null
+      - slot_was_set:
+          - symptoms: ["nausea", "stomach cramps", "diarrhea"]
+          - duration: "1 day"
+          - severity: "moderate"
+          - requested_slot: null
+      - action: action_check_emergency
+      - action: action_identify_ailment
+      - action: action_recommend_treatment
