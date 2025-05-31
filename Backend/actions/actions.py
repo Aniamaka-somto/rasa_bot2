@@ -386,7 +386,6 @@ class StudentHealthDatabase:
         if not symptom_matches:
             return None
             
-        # Sort by match score and percentage
         best_matches = sorted(
             symptom_matches.items(), 
             key=lambda x: (x[1]["score"], x[1]["match_percentage"]), 
@@ -427,23 +426,19 @@ class ActionIdentifyAilment(Action):
             dispatcher.utter_message(text="I need to know your symptoms first. What are you experiencing?")
             return []
         
-        # Check for emergency first
         if StudentHealthDatabase.check_emergency(symptoms):
             return [SlotSet("emergency_case", True)]
         
-        # Identify ailment
         ailment = StudentHealthDatabase.identify_ailment(symptoms, duration, severity)
         
         if ailment:
             ailment_data = StudentHealthDatabase.AILMENTS_DB[ailment]
-            
-            # Format ailment name for display
             display_name = ailment.replace("_", " ").title()
             
             message = f"🩺 **Possible Condition: {display_name}**\n\n"
             message += f"🕒 **Typical Duration:** {ailment_data['duration']}\n\n"
             message += f"📋 **Common Symptoms Include:**\n"
-            for symptom in ailment_data['symptoms'][:5]:  # Show first 5 symptoms
+            for symptom in ailment_data['symptoms'][:5]:
                 message += f"• {symptom.capitalize()}\n"
             
             if len(ailment_data['symptoms']) > 5:
@@ -480,8 +475,6 @@ class ActionRecommendTreatment(Action):
         ailment_data = StudentHealthDatabase.AILMENTS_DB[ailment]
         
         message = f"💊 **Recommended Treatments:**\n\n"
-        
-        # General treatments
         message += f"🏠 **Home Care:**\n"
         for i, treatment in enumerate(ailment_data['treatments'], 1):
             message += f"{i}. {treatment}\n"
@@ -490,7 +483,6 @@ class ActionRecommendTreatment(Action):
         for i, medication in enumerate(ailment_data['medications'], 1):
             message += f"{i}. {medication}\n"
         
-        # Add severity-based recommendations
         if severity == "severe":
             message += f"\n⚠️ **Note:** Since you rated your symptoms as severe, "
             message += f"consider seeking medical attention sooner rather than later.\n"
@@ -499,7 +491,6 @@ class ActionRecommendTreatment(Action):
             message += f"Monitor your condition and seek help if symptoms worsen.\n"
         
         message += f"\n⏳ **Expected Recovery Time:** {ailment_data['duration']}\n"
-        
         message += f"\n⚠️ **When to see a doctor:**\n"
         message += f"• Symptoms worsen or don't improve after expected duration\n"
         message += f"• High fever (>101.3°F/38.5°C)\n"
@@ -524,7 +515,6 @@ class ActionCheckEmergency(Action):
         
         symptoms = tracker.get_slot("symptoms") or []
         
-        # Get all user messages to check for emergency keywords
         events = tracker.events
         user_messages = []
         for event in events:
@@ -546,7 +536,7 @@ class ActionCheckEmergency(Action):
         
         if is_emergency or StudentHealthDatabase.check_emergency(symptoms):
             dispatcher.utter_message(template="utter_emergency_alert")
-            return [SlotSet("emergency_case", True), AllSlotsReset()]  # Reset conversation
+            return [SlotSet("emergency_case", True), AllSlotsReset()]
         
         return [SlotSet("emergency_case", False)]
 
@@ -569,7 +559,6 @@ class ActionProvideMedicationInfo(Action):
         
         ailment_data = StudentHealthDatabase.AILMENTS_DB[ailment]
         
-        # Common medication dosages and information
         medication_info = {
             "paracetamol": {
                 "dosage": "500-1000mg every 6 hours (max 4g/day)",
@@ -590,8 +579,6 @@ class ActionProvideMedicationInfo(Action):
         for medication in ailment_data['medications']:
             med_lower = medication.lower()
             message += f"💊 **{medication}**\n"
-            
-            # Add specific dosage info if available
             for med_key, info in medication_info.items():
                 if med_key in med_lower:
                     message += f"   • Dosage: {info['dosage']}\n"
@@ -635,7 +622,6 @@ class ActionGivePreventionTips(Action):
             
             dispatcher.utter_message(text=message)
         
-        # Always provide general prevention tips
         dispatcher.utter_message(template="utter_prevention_general")
         
         return []
@@ -668,7 +654,6 @@ class ValidateSymptomForm(FormValidationAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
-        
         if slot_value:
             return {"symptoms": slot_value}
         else:
@@ -682,11 +667,10 @@ class ValidateSymptomForm(FormValidationAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
-        
-        if slot_value:
+        if slot_value and isinstance(slot_value, str) and any(word in slot_value.lower() for word in ["hours", "days", "weeks", "ago"]):
             return {"duration": slot_value}
         else:
-            dispatcher.utter_message(text="How long have you been experiencing these symptoms?")
+            dispatcher.utter_message(text="Please specify how long you've had these symptoms (e.g., '2 days' or 'a few hours ago').")
             return {"duration": None}
     
     def validate_severity(
@@ -696,22 +680,38 @@ class ValidateSymptomForm(FormValidationAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
-        
         valid_severities = ["mild", "moderate", "severe"]
         
-        # Normalize the input to lowercase for comparison
+        # Check if the slot value is already valid
         if isinstance(slot_value, str):
             slot_value_lower = slot_value.lower()
             if slot_value_lower in valid_severities:
                 return {"severity": slot_value_lower}
         
-        # Check tracker for latest message if slot_value isn't directly usable
+        # Check the latest user message for a severity value
         latest_message = tracker.latest_message.get("text", "").lower()
         for severity in valid_severities:
             if severity in latest_message:
                 return {"severity": severity}
         
-        dispatcher.utter_message(text="Please rate your symptoms as mild, moderate, or severe.")
+        # If the slot isn't filled and no valid severity is found in the latest message,
+        # return None to let the form's default utter_ask_severity handle the prompt
+        # Only dispatch a custom message if the user has already been asked and provided an invalid response
+        if tracker.get_slot("requested_slot") == "severity":
+            # Check if the user was just asked for severity (i.e., the last bot message was utter_ask_severity)
+            last_bot_message = None
+            for event in reversed(tracker.events):
+                if event.get("event") == "bot" and event.get("text"):
+                    last_bot_message = event.get("text")
+                    break
+            
+            # If the last message was the default severity prompt, the user likely gave an invalid response
+            if last_bot_message in [
+                "On a scale of mild, moderate, to severe, how would you rate your symptoms?",
+                "How severe are your symptoms? Would you describe them as mild, moderate, or severe?"
+            ]:
+                dispatcher.utter_message(text="Please rate your symptoms as mild, moderate, or severe.")
+        
         return {"severity": None}
 
 
